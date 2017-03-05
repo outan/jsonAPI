@@ -129,6 +129,8 @@ router.route('/orders')
             if (err)
                 res.send(err);
             res.json({ message: 'Order created!' });
+            socketioServer.sockets.emit("drink_button", order.drink);
+            console.log("emit drink_button: " + order.drink);
         });
     })
 
@@ -145,5 +147,11 @@ router.route('/orders')
 app.use('/api', router);
 
 //サーバ起動
-app.listen(port);
+var server = app.listen(port);
 console.log('listen on port ' + port);
+
+var socketio = require( 'socket.io' );
+var socketioServer = socketio.listen( server );
+socketioServer.sockets.on( 'connection', function(socket) {
+  console.log('some websocket client is connected to node express websocket server');
+});
