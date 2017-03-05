@@ -11,6 +11,7 @@ mongoose.connect('mongodb://localhost/beaconDrink');
 
 // モデルの宣言
 var User       = require('./app/models/user');
+var Order      = require('./app/models/order');
 
 // POSTでdataを受け取るための記述
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -104,6 +105,39 @@ router.route('/users/:user_id')
             if (err)
                 res.send(err);
             res.json({ message: 'Successfully deleted' });
+        });
+    });
+
+
+// /orders というルートを作成する．
+// ----------------------------------------------------
+router.route('/orders')
+
+// orderの作成 (POST http://localhost:3000/api/orders)
+    .post(function(req, res) {
+
+        // 新しいorderのモデルを作成する．
+        var order = new Order();
+
+        // 各カラムの情報を取得する．
+        order.user_id = req.body.user_id;
+        order.drink = req.body.drink;
+        order.method = req.body.method;
+
+        // order情報をセーブする．
+        order.save(function(err) {
+            if (err)
+                res.send(err);
+            res.json({ message: 'Order created!' });
+        });
+    })
+
+// 全てのorder一覧を取得 (GET http://localhost:8080/api/orders)
+    .get(function(req, res) {
+        Order.find(function(err, orders) {
+            if (err)
+                res.send(err);
+            res.json(orders);
         });
     });
 
